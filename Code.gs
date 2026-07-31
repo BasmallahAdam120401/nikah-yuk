@@ -17,6 +17,7 @@ function setupDatabase() {
   const ss = getDb();
   const sheets = [
     { name: 'Profile', headers: ['Key', 'Value'] },
+    { name: 'Users', headers: ['Role', 'UserID', 'Password', 'DisplayName'] },
     { name: 'Tabungan', headers: ['ID', 'Tanggal', 'Role', 'Jumlah', 'Bukti', 'Status'] },
     { name: 'Budget', headers: ['ID', 'Kategori', 'Item', 'Estimasi', 'Porsi_Pria', 'Porsi_Wanita', 'Realisasi', 'Dibayar_Pria', 'Dibayar_Wanita'] },
     { name: 'Progress_Checklist', headers: ['ID', 'Kategori', 'Tugas', 'Target_Selesai', 'Status'] },
@@ -48,6 +49,17 @@ function setupDatabase() {
     ];
     defaultProfiles.forEach(row => profSheet.appendRow(row));
   }
+
+  // Seed default akun login jika sheet Users masih kosong
+  const userSheet = ss.getSheetByName('Users');
+  if (userSheet.getLastRow() <= 1) {
+    const defaultUsers = [
+      ['Admin', 'admin', 'admin123', 'Administrator'],
+      ['Pria', 'pria', 'pria123', 'Calon Mempelai Pria'],
+      ['Wanita', 'wanita', 'wanita123', 'Calon Mempelai Wanita']
+    ];
+    defaultUsers.forEach(row => userSheet.appendRow(row));
+  }
 }
 
 // === API BACKEND SERVICES ===
@@ -74,6 +86,7 @@ function getDataAll() {
 
   return {
     profile: profile,
+    accounts: getAccounts(),
     tabungan: getSheetData('Tabungan'),
     budget: getSheetData('Budget'),
     checklist: getSheetData('Progress_Checklist'),
@@ -82,6 +95,71 @@ function getDataAll() {
     perlengkapan: getSheetData('Perlengkapan'),
     moodboard: getSheetData('Moodboard')
   };
+}
+
+function getAccounts() {
+  const sheet = getDb().getSheetByName('Users');
+  if (!sheet) return [];
+  const values = sheet.getDataRange().getValues();
+  if (values.length <= 1) return [];
+  const headers = values[0];
+  return values.slice(1).map(row => {
+    let obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = h === 'Password' ? '' : row[i];
+    });
+    return obj;
+  });
+}
+
+function validateLogin(role, userId, password) {
+  setupDatabase();
+  const sheet = getDb().getSheetByName('Users');
+  const values = sheet.getDataRange().getValues();
+  const normalize = value => String(value || '').trim();
+
+  for (let i = 1; i < values.length; i++) {
+    const rowRole = normalize(values[i][0]);
+    const rowUserId = normalize(values[i][1]);
+    const rowPassword = normalize(values[i][2]);
+    const displayName = normalize(values[i][3]);
+
+    if (rowRole === role && rowUserId === normalize(userId) && rowPassword === normalize(password)) {
+      return {
+        success: true,
+        user: {
+          role: rowRole,
+          userId: rowUserId,
+          displayName: displayName || rowRole
+        }
+      };
+    }
+  }
+
+  return {
+    success: false,
+    message: 'ID, password, atau role tidak sesuai.'
+  };
+}
+
+function updateAccount(role, userId, password, displayName) {
+  const sheet = getDb().getSheetByName('Users');
+  const data = sheet.getDataRange().getValues();
+  const normalize = value => String(value || '').trim();
+
+  for (let i = 1; i < data.length; i++) {
+    if (normalize(data[i][0]) === normalize(role)) {
+      sheet.getRange(i + 1, 2).setValue(normalize(userId));
+      if (normalize(password)) {
+        sheet.getRange(i + 1, 3).setValue(normalize(password));
+      }
+      sheet.getRange(i + 1, 4).setValue(normalize(displayName));
+      return { success: true };
+    }
+  }
+
+  sheet.appendRow([normalize(role), normalize(userId), normalize(password), normalize(displayName)]);
+  return { success: true };
 }
 
 function updateProfile(key, value) {
