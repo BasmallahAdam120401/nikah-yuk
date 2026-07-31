@@ -41,6 +41,13 @@
     .btn-ghost { background: #f8fafc; color: var(--light-text); border: 1px solid #e2e8f0; }
     .login-error { color: #dc2626; font-size: 0.78rem; margin-top: 10px; min-height: 18px; }
     #appShell { display: none; }
+    /* Login Overlay */
+    #loginModal { position: fixed; inset: 0; background: var(--bg-gradient); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+    .login-card { background: white; border-radius: 24px; padding: 30px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .login-btn { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+    .btn-admin { background: #38bdf8; color: white; }
+    .btn-pria { background: #bae6fd; color: #0369a1; }
+    .btn-wanita { background: #fbcfe8; color: #be185d; }
 
     /* Content Area */
     .content { padding: 15px; }
@@ -117,6 +124,14 @@
   </div>
 
   <div id="appShell">
+      <h2 style="margin-bottom: 5px; font-weight: 800;">NIKAH YUK!</h2>
+      <p style="font-size: 0.8rem; color: var(--light-text); margin-bottom: 20px;">Pilih Akses Masuk Akun</p>
+      <button class="login-btn btn-admin" onclick="setRole('Admin')"><i class="fa-solid fa-user-shield"></i> Akun Admin</button>
+      <button class="login-btn btn-pria" onclick="setRole('Pria')"><i class="fa-solid fa-mars"></i> Mempelai Pria</button>
+      <button class="login-btn btn-wanita" onclick="setRole('Wanita')"><i class="fa-solid fa-venus"></i> Mempelai Wanita</button>
+    </div>
+  </div>
+
   <!-- Header Top Bar -->
   <div class="header">
     <h1>NIKAH YUK!</h1>
@@ -362,6 +377,10 @@
     document.getElementById('currentRoleDisplay').innerText = CURRENT_USER?.displayName || role;
     document.getElementById('loginModal').style.display = 'none';
     document.getElementById('appShell').style.display = 'block';
+  function setRole(role) {
+    CURRENT_ROLE = role;
+    document.getElementById('currentRoleDisplay').innerText = role;
+    document.getElementById('loginModal').style.display = 'none';
     
     // Admin Privilege visibility
     if(role !== 'Admin') {
@@ -378,6 +397,7 @@
     document.getElementById('appShell').style.display = 'none';
     document.getElementById('loginModal').style.display = 'flex';
     showLoginStep('landing');
+    document.getElementById('loginModal').style.display = 'flex';
   }
 
   function refreshData() {
@@ -720,6 +740,9 @@
       alert('Pengaturan akun berhasil disimpan.');
       refreshData();
     }, 500);
+  }
+
+    }
   }
 
   function saveProfile() {
