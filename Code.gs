@@ -93,11 +93,13 @@ function getDataAll() {
     tamu: getSheetData('Tamu_Undangan'),
     kua: getSheetData('Dokumen_KUA'),
     perlengkapan: getSheetData('Perlengkapan'),
+    moodboard: getSheetData('Moodboards')
     moodboard: getSheetData('Moodboard')
   };
 }
 
 function getAccounts() {
+  setupDatabase();
   const sheet = getDb().getSheetByName('Users');
   if (!sheet) return [];
   const values = sheet.getDataRange().getValues();
@@ -143,6 +145,7 @@ function validateLogin(role, userId, password) {
 }
 
 function updateAccount(role, userId, password, displayName) {
+  setupDatabase();
   const sheet = getDb().getSheetByName('Users');
   const data = sheet.getDataRange().getValues();
   const normalize = value => String(value || '').trim();
