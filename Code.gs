@@ -94,6 +94,7 @@ function getDataAll() {
     kua: getSheetData('Dokumen_KUA'),
     perlengkapan: getSheetData('Perlengkapan'),
     moodboard: getSheetData('Moodboards')
+    moodboard: getSheetData('Moodboard')
   };
 }
 
