@@ -93,8 +93,7 @@ function getDataAll() {
     tamu: getSheetData('Tamu_Undangan'),
     kua: getSheetData('Dokumen_KUA'),
     perlengkapan: getSheetData('Perlengkapan'),
-    moodboard: getSheetData('Moodboards')
-    moodboard: getSheetData('Moodboard')
+    moodboard: getSheetData('Moodboards')\
   };
 }
 
