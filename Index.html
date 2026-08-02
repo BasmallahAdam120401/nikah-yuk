@@ -41,6 +41,13 @@
     .btn-ghost { background: #f8fafc; color: var(--light-text); border: 1px solid #e2e8f0; }
     .login-error { color: #dc2626; font-size: 0.78rem; margin-top: 10px; min-height: 18px; }
     #appShell { display: none; }
+    /* Login Overlay */
+    #loginModal { position: fixed; inset: 0; background: var(--bg-gradient); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+    .login-card { background: white; border-radius: 24px; padding: 30px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .login-btn { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+    .btn-admin { background: #38bdf8; color: white; }
+    .btn-pria { background: #bae6fd; color: #0369a1; }
+    .btn-wanita { background: #fbcfe8; color: #be185d; }
 
     /* Content Area */
     .content { padding: 15px; }
@@ -90,33 +97,41 @@
       <div id="loginStepLanding" class="login-step active">
         <h2 style="margin-bottom: 5px; font-weight: 900;">Nikah Yuk!</h2>
         <p style="font-size: 0.84rem; color: var(--light-text); margin-bottom: 20px;">Wedding planner digital yang simple, rapi, dan siap dipakai bareng pasangan.</p>
-        <button type="button" id="btnOpenLogin" class="login-btn login-main-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+        <button class="login-btn login-main-btn" onclick="showLoginStep('role')"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
       </div>
 
       <div id="loginStepRole" class="login-step">
         <h2 style="margin-bottom: 5px; font-weight: 800;">Pilih Role</h2>
         <p style="font-size: 0.8rem; color: var(--light-text); margin-bottom: 20px;">Masuk sesuai akses akun.</p>
-        <button type="button" id="btnRoleAdmin" class="login-btn btn-admin"><i class="fa-solid fa-user-shield"></i> Administrator</button>
-        <button type="button" id="btnRolePria" class="login-btn btn-pria"><i class="fa-solid fa-mars"></i> Calon Mempelai Pria</button>
-        <button type="button" id="btnRoleWanita" class="login-btn btn-wanita"><i class="fa-solid fa-venus"></i> Calon Mempelai Wanita</button>
-        <button type="button" id="btnBackLanding" class="login-btn btn-ghost">Kembali</button>
+        <button class="login-btn btn-admin" onclick="selectLoginRole('Admin')"><i class="fa-solid fa-user-shield"></i> Administrator</button>
+        <button class="login-btn btn-pria" onclick="selectLoginRole('Pria')"><i class="fa-solid fa-mars"></i> Calon Mempelai Pria</button>
+        <button class="login-btn btn-wanita" onclick="selectLoginRole('Wanita')"><i class="fa-solid fa-venus"></i> Calon Mempelai Wanita</button>
+        <button class="login-btn btn-ghost" onclick="showLoginStep('landing')">Kembali</button>
       </div>
 
       <div id="loginStepForm" class="login-step">
         <h2 id="loginRoleTitle" style="margin-bottom: 5px; font-weight: 800;">Login</h2>
         <p style="font-size: 0.8rem; color: var(--light-text); margin-bottom: 18px;">Masukkan ID dan password akun.</p>
-        <form id="loginForm">
+        <form onsubmit="handleLogin(event)">
           <div class="form-group" style="text-align:left;"><label>ID Pengguna</label><input id="loginUserId" class="form-control" autocomplete="username" required></div>
           <div class="form-group" style="text-align:left;"><label>Password</label><input id="loginPassword" type="password" class="form-control" autocomplete="current-password" required></div>
           <button id="loginSubmitBtn" type="submit" class="login-btn login-main-btn">Masuk</button>
         </form>
         <div id="loginError" class="login-error"></div>
-        <button type="button" id="btnBackRole" class="login-btn btn-ghost">Ganti Role</button>
+        <button class="login-btn btn-ghost" onclick="showLoginStep('role')">Ganti Role</button>
       </div>
     </div>
   </div>
 
   <div id="appShell">
+      <h2 style="margin-bottom: 5px; font-weight: 800;">NIKAH YUK!</h2>
+      <p style="font-size: 0.8rem; color: var(--light-text); margin-bottom: 20px;">Pilih Akses Masuk Akun</p>
+      <button class="login-btn btn-admin" onclick="setRole('Admin')"><i class="fa-solid fa-user-shield"></i> Akun Admin</button>
+      <button class="login-btn btn-pria" onclick="setRole('Pria')"><i class="fa-solid fa-mars"></i> Mempelai Pria</button>
+      <button class="login-btn btn-wanita" onclick="setRole('Wanita')"><i class="fa-solid fa-venus"></i> Mempelai Wanita</button>
+    </div>
+  </div>
+
   <!-- Header Top Bar -->
   <div class="header">
     <h1>NIKAH YUK!</h1>
@@ -302,29 +317,9 @@
   let CURRENT_USER = null;
 
   // App Initialization
-  document.addEventListener('DOMContentLoaded', initApp);
-
-  function initApp() {
-    bindLoginButtons();
-    showLoginStep('landing');
+  window.onload = () => {
     refreshData();
-  }
-
-  function bindLoginButtons() {
-    const bind = (id, handler) => {
-      const el = document.getElementById(id);
-      if(el) el.addEventListener('click', handler);
-    };
-
-    bind('btnOpenLogin', () => showLoginStep('role'));
-    bind('btnRoleAdmin', () => selectLoginRole('Admin'));
-    bind('btnRolePria', () => selectLoginRole('Pria'));
-    bind('btnRoleWanita', () => selectLoginRole('Wanita'));
-    bind('btnBackLanding', () => showLoginStep('landing'));
-    bind('btnBackRole', () => showLoginStep('role'));
-    const loginForm = document.getElementById('loginForm');
-    if(loginForm) loginForm.addEventListener('submit', handleLogin);
-  }
+  };
 
   function showLoginStep(step) {
     document.querySelectorAll('.login-step').forEach(el => el.classList.remove('active'));
@@ -383,7 +378,10 @@
     document.getElementById('loginModal').style.display = 'none';
     document.getElementById('appShell').style.display = 'block';
     const moreSelect = document.getElementById('moreFeatureSelect');
-    refreshData();
+  function setRole(role) {
+    CURRENT_ROLE = role;
+    document.getElementById('currentRoleDisplay').innerText = role;
+    document.getElementById('loginModal').style.display = 'none';
     
     // Admin Privilege visibility
     if(role !== 'Admin') {
@@ -394,6 +392,8 @@
       }
     } else {
       document.querySelectorAll('.admin-only').forEach(e => e.style.display = '');
+    } else {
+      document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'inline-block');
     }
   }
 
@@ -404,24 +404,19 @@
     document.getElementById('appShell').style.display = 'none';
     document.getElementById('loginModal').style.display = 'flex';
     showLoginStep('landing');
+    document.getElementById('loginModal').style.display = 'flex';
   }
 
   function refreshData() {
-    google.script.run
-      .withSuccessHandler(data => {
-        GLOBAL_DATA = data || {};
-        renderDashboard();
-        renderTabungan();
-        renderBudget();
-        renderChecklist();
-        renderTamu();
-        switchMoreFeature(document.getElementById('moreFeatureSelect').value);
-      })
-      .withFailureHandler(err => {
-        const errorBox = document.getElementById('loginError');
-        if(errorBox) errorBox.innerText = err.message || 'Gagal memuat database aplikasi.';
-      })
-      .getDataAll();
+    google.script.run.withSuccessHandler(data => {
+      GLOBAL_DATA = data;
+      renderDashboard();
+      renderTabungan();
+      renderBudget();
+      renderChecklist();
+      renderTamu();
+      switchMoreFeature(document.getElementById('moreFeatureSelect').value);
+    }).getDataAll();
   }
 
   function switchNav(viewName, btn) {
@@ -465,7 +460,6 @@
   }
 
   function renderTabunganChart() {
-    if(!window.Chart) return;
     const ctx = document.getElementById('chartTabungan').getContext('2d');
     const tabungan = GLOBAL_DATA.tabungan || [];
     
@@ -572,7 +566,6 @@
     });
 
     // Render Split Bill Chart
-    if(!window.Chart) return;
     const ctx = document.getElementById('chartSplitBill').getContext('2d');
     if(window.mySplitChart) window.mySplitChart.destroy();
     window.mySplitChart = new Chart(ctx, {
@@ -696,37 +689,9 @@
       data.forEach(d => {
         html += `<div class="list-item"><div>${d.Nama_Dokumen} (${d.Pihak})</div><div><b>${d.Status}</b></div></div>`;
       });
-      if(data.length === 0) html += '<p style="font-size:0.82rem; color:var(--light-text);">Belum ada dokumen KUA yang diinput.</p>';
-      container.innerHTML = html + '</div>';
-      return;
-    }
-
-    if(type === 'perlengkapan') {
-      const data = GLOBAL_DATA.perlengkapan || [];
-      let html = '<div class="card"><div class="card-title">Tracking Perlengkapan</div>';
-      data.forEach(item => {
-        html += `<div class="list-item"><div><b>${item.Item}</b><div style="font-size:0.7rem; color:var(--light-text);">PIC: ${item.Penanggung_Jawab || '-'} • Jumlah: ${item.Jumlah || '-'}</div></div><div><b>${item.Status_Siap || 'Belum'}</b></div></div>`;
-      });
-      if(data.length === 0) html += '<p style="font-size:0.82rem; color:var(--light-text);">Belum ada perlengkapan yang diinput.</p>';
-      container.innerHTML = html + '</div>';
-      return;
-    }
-
-    if(type === 'moodboard') {
-      const data = GLOBAL_DATA.moodboard || [];
-      let html = '<div class="card"><div class="card-title">Referensi Moodboard</div>';
-      data.forEach(item => {
-        const linkHtml = item.URL_Foto
-          ? '<a href="' + escapeAttr(item.URL_Foto) + '" target="_blank" style="font-size:0.75rem; color:var(--primary-blue);">Buka</a>'
-          : '-';
-        html += `<div class="list-item"><div><b>${item.Judul}</b><div style="font-size:0.7rem; color:var(--light-text);">${item.Kategori || '-'} • ${item.Catatan || ''}</div></div><div>${linkHtml}</div></div>`;
-      });
-      if(data.length === 0) html += '<p style="font-size:0.82rem; color:var(--light-text);">Belum ada referensi moodboard yang diinput.</p>';
-      container.innerHTML = html + '</div>';
-      return;
-    }
-
-    if(type === 'profile') {
+      html += '</div>';
+      container.innerHTML = html;
+    } else if(type === 'profile') {
       if(CURRENT_ROLE !== 'Admin') {
         container.innerHTML = '<div class="card">Fitur ini hanya tersedia untuk Admin.</div>';
         return;
@@ -739,14 +704,11 @@
           <div class="form-group"><label>URL Foto Pria</label><input id="pfImgPria" class="form-control" value="${escapeAttr(prof.foto_pria || '')}"></div>
           <div class="form-group"><label>Nama Wanita</label><input id="pfWanita" class="form-control" value="${escapeAttr(prof.nama_wanita || '')}"></div>
           <div class="form-group"><label>URL Foto Wanita</label><input id="pfImgWanita" class="form-control" value="${escapeAttr(prof.foto_wanita || '')}"></div>
-          <div class="form-group"><label>Tanggal Menikah</label><input type="date" id="pfTgl" class="form-control" value="${escapeAttr(prof.tanggal_nikah || '')}"></div>
+          <div class="form-group"><label>Tanggal Menikah</label><input type="date" id="pfTgl" class="form-control" value="${escapeAttr(prof.tanggal_nikah || '')}"></div
           <button onclick="saveProfile()" class="btn-action">Simpan Perubahan Profile</button>
         </div>
       `;
-      return;
-    }
-
-    if(type === 'accounts') {
+    } else if(type === 'accounts') {
       if(CURRENT_ROLE !== 'Admin') {
         container.innerHTML = '<div class="card">Fitur ini hanya tersedia untuk Admin.</div>';
         return;
@@ -775,6 +737,8 @@
         <div style="font-weight:800; margin-bottom:8px;">${label}</div>
         <div class="form-group"><label>Display Name</label><input id="accName${role}" class="form-control" value="${escapeAttr(account.DisplayName || label)}"></div>
         <div class="form-group"><label>ID Login</label><input id="accUser${role}" class="form-control" value="${escapeAttr(account.UserID || role.toLowerCase())}"></div>
+        <div class="form-group"><label>Display Name</label><input id="accName${role}" class="form-control" value="${account.DisplayName || label}"></div>
+        <div class="form-group"><label>ID Login</label><input id="accUser${role}" class="form-control" value="${account.UserID || role.toLowerCase()}"></div>
         <div class="form-group"><label>Password Baru</label><input id="accPass${role}" type="password" class="form-control" placeholder="Kosongkan jika tidak diganti"></div>
       </div>
     `;
@@ -808,6 +772,21 @@
       .replace(/"/g, '&quot;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
+    ['Admin', 'Pria', 'Wanita'].forEach(role => {
+      google.script.run.updateAccount(
+        role,
+        document.getElementById(`accUser${role}`).value,
+        document.getElementById(`accPass${role}`).value,
+        document.getElementById(`accName${role}`).value
+      );
+    });
+    setTimeout(() => {
+      alert('Pengaturan akun berhasil disimpan.');
+      refreshData();
+    }, 500);
+  }
+
+    }
   }
 
   function saveProfile() {
@@ -819,26 +798,8 @@
       alert('Pengaturan profil berhasil disimpan.');
       refreshData();
     }).updateProfile('tanggal_nikah', document.getElementById('pfTgl').value);
+    google.script.run.withSuccessHandler(() => refreshData()).updateProfile('tanggal_nikah', document.getElementById('pfTgl').value);
   }
-
-  Object.assign(window, {
-    showLoginStep,
-    selectLoginRole,
-    handleLogin,
-    logout,
-    switchNav,
-    handleTopUp,
-    approveTabungan,
-    editRekening,
-    handleBudget,
-    handleChecklist,
-    toggleChecklist,
-    handleTamu,
-    updateTamuStatus,
-    switchMoreFeature,
-    saveAccounts,
-    saveProfile
-  });
 </script>
 </body>
 </html>
