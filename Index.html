@@ -704,12 +704,7 @@
           <div class="form-group"><label>URL Foto Pria</label><input id="pfImgPria" class="form-control" value="${escapeAttr(prof.foto_pria || '')}"></div>
           <div class="form-group"><label>Nama Wanita</label><input id="pfWanita" class="form-control" value="${escapeAttr(prof.nama_wanita || '')}"></div>
           <div class="form-group"><label>URL Foto Wanita</label><input id="pfImgWanita" class="form-control" value="${escapeAttr(prof.foto_wanita || '')}"></div>
-          <div class="form-group"><label>Tanggal Menikah</label><input type="date" id="pfTgl" class="form-control" value="${escapeAttr(prof.tanggal_nikah || '')}"></div>
-          <div class="form-group"><label>Nama Pria</label><input id="pfPria" class="form-control" value="${prof.nama_pria || ''}"></div>
-          <div class="form-group"><label>URL Foto Pria</label><input id="pfImgPria" class="form-control" value="${prof.foto_pria || ''}"></div>
-          <div class="form-group"><label>Nama Wanita</label><input id="pfWanita" class="form-control" value="${prof.nama_wanita || ''}"></div>
-          <div class="form-group"><label>URL Foto Wanita</label><input id="pfImgWanita" class="form-control" value="${prof.foto_wanita || ''}"></div>
-          <div class="form-group"><label>Tanggal Menikah</label><input type="date" id="pfTgl" class="form-control" value="${prof.tanggal_nikah || ''}"></div>
+          <div class="form-group"><label>Tanggal Menikah</label><input type="date" id="pfTgl" class="form-control" value="${escapeAttr(prof.tanggal_nikah || '')}"></div
           <button onclick="saveProfile()" class="btn-action">Simpan Perubahan Profile</button>
         </div>
       `;
