@@ -1,6 +1,4 @@
 // Global Configuration & Auto-Database Setup
-const SPREADSHEET_ID = '1ZSFSX8QLWyOsQQlK8x4ox4gx7VVk-37hs_qpbzhlkk4';
-
 function doGet() {
   setupDatabase(); // Otomatis buat sheet & header jika belum ada
   return HtmlService.createTemplateFromFile('Index')
@@ -11,7 +9,7 @@ function doGet() {
 }
 
 function getDb() {
-  return SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(SPREADSHEET_ID);
+  return SpreadsheetApp.getActiveSpreadsheet();
 }
 
 // Setup struktur database otomatis
@@ -95,7 +93,7 @@ function getDataAll() {
     tamu: getSheetData('Tamu_Undangan'),
     kua: getSheetData('Dokumen_KUA'),
     perlengkapan: getSheetData('Perlengkapan'),
-    moodboard: getSheetData('Moodboards')
+    moodboard: getSheetData('Moodboards')\
   };
 }
 
